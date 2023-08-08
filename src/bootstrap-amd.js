@@ -52,36 +52,4 @@ if (process.env['ELECTRON_RUN_AS_NODE'] || process.versions['electron']) {
 	});
 }
 
-// Pseudo NLS support
-if (nlsConfig && nlsConfig.pseudo) {
-	loader(['vs/nls'], function (/** @type {import('vs/nls')} */nlsPlugin) {
-		nlsPlugin.setPseudoTranslation(!!nlsConfig.pseudo);
-	});
-}
 
-/**
- * @param {string=} entrypoint
- * @param {(value: any) => void=} onLoad
- * @param {(err: Error) => void=} onError
- */
-exports.load = function (entrypoint, onLoad, onError) {
-	if (!entrypoint) {
-		return;
-	}
-
-	// code cache config
-	if (process.env['VSCODE_CODE_CACHE_PATH']) {
-		loader.config({
-			nodeCachedData: {
-				path: process.env['VSCODE_CODE_CACHE_PATH'],
-				seed: entrypoint
-			}
-		});
-	}
-
-	onLoad = onLoad || function () { };
-	onError = onError || function (err) { console.error(err); };
-
-	performance.mark('code/fork/willLoadCode');
-	loader([entrypoint], onLoad, onError);
-};
